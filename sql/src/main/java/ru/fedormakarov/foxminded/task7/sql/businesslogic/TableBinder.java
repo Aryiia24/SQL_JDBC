@@ -38,7 +38,6 @@ public class TableBinder {
         List<Group> groupListWithSize = generateSizeToGroups(groupListWithoutSize);
         List<Student> studentList = new LinkedList<>(studentService.getAll());
         Collections.shuffle(studentList);
-
         for (Group group : groupListWithSize) {
             if (group.getSize() == 0) {
                 break;

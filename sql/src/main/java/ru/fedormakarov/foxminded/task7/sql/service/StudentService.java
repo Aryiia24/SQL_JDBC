@@ -14,132 +14,82 @@ import ru.fedormakarov.foxminded.task7.sql.entity.Student;
 public class StudentService extends Util implements StudentDAO {
 
     @Override
-    public Student getById(int id) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        Connection connection = getConnection();
+    public Student getById(int studentId) throws SQLException {
         String sql = "SELECT student_id, first_name, last_name, group_id FROM students WHERE student_id=?";
-
         Student student = new Student();
-
-        try {
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, id);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            student.setStudentId(resultSet.getInt("student_id"));
-            student.setFirstName(resultSet.getString("first_name"));
-            student.setLastName(resultSet.getString("last_name"));
-            student.setGroupId(resultSet.getInt("group_id"));
-
-            preparedStatement.executeUpdate();
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            preparedStatement.setInt(1, studentId);
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                if (resultSet.next()) {
+                    student.setStudentId(resultSet.getInt("student_id"));
+                    student.setFirstName(resultSet.getString("first_name"));
+                    student.setLastName(resultSet.getString("last_name"));
+                    student.setGroupId(resultSet.getInt("group_id"));
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
         }
-
         return student;
     }
 
     @Override
-    public void add(Student student) throws SQLException {
-        Connection connection = getConnection();
-
-        PreparedStatement preparedStatement = null;
-
+    public boolean add(Student student) throws SQLException {
         String sql = "INSERT INTO students (student_id, first_name, last_name, group_id) VALUES (?,?,?,?)";
-
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, student.getStudentId());
             preparedStatement.setString(2, student.getFirstName());
             preparedStatement.setString(3, student.getLastName());
             preparedStatement.setInt(4, student.getGroupId());
             preparedStatement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
+            return false;
         }
     }
 
     @Override
-    public void delete(int student_id) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        Connection connection = getConnection();
-
+    public boolean delete(int studentId) throws SQLException {
         String sql = "DELETE FROM students WHERE student_id=?";
-
-        try {
-            preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setInt(1, student_id);
-
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            preparedStatement.setInt(1, studentId);
             preparedStatement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
+            return false;
         }
     }
 
     @Override
-    public void update(Student student) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        Connection connection = getConnection();
+    public boolean update(Student student) throws SQLException {
         String sql = "UPDATE students SET first_name=?, last_name=?, group_id=? WHERE student_id=?";
-
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, student.getFirstName());
             preparedStatement.setString(2, student.getLastName());
             preparedStatement.setInt(3, student.getGroupId());
             preparedStatement.setInt(4, student.getStudentId());
             preparedStatement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
+            return false;
         }
     }
 
     @Override
     public List<Student> getAll() throws SQLException {
         List<Student> studentList = new ArrayList<>();
-        Connection connection = getConnection();
-        Statement statement = null;
         String sql = "SELECT student_id, first_name, last_name, group_id FROM students";
-
-        try {
-            statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery(sql);
-
+        try (Connection connection = getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);) {
             while (resultSet.next()) {
                 Student student = new Student();
                 student.setStudentId(resultSet.getInt("student_id"));
@@ -148,56 +98,35 @@ public class StudentService extends Util implements StudentDAO {
                 student.setGroupId(resultSet.getInt("group_id"));
                 studentList.add(student);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
         }
         return studentList;
     }
 
     public List<Student> getAllStudentsFromCourse(String courseName) throws SQLException {
         List<Student> studentList = new ArrayList<>();
-        Connection connection = getConnection();
-        PreparedStatement preparedStatement = null;
         String sql = "SELECT st.student_id, first_name, last_name, group_id FROM students st "
                 + "JOIN students_courses stcu ON(st.student_id = stcu.student_id) "
-                + "WHERE course_id = (SELECT course_id FROM courses WHERE course_name=? ORDER BY st.student_id) ORDER BY st.student_id";
-
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+                + "WHERE course_id = (SELECT course_id FROM courses WHERE course_name=?) ORDER BY st.student_id";
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, courseName);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                Student student = new Student();
-                student.setStudentId(resultSet.getInt("student_id"));
-                student.setFirstName(resultSet.getString("first_name"));
-                student.setLastName(resultSet.getString("last_name"));
-                student.setGroupId(resultSet.getInt("group_id"));
-                studentList.add(student);
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                while (resultSet.next()) {
+                    Student student = new Student();
+                    student.setStudentId(resultSet.getInt("student_id"));
+                    student.setFirstName(resultSet.getString("first_name"));
+                    student.setLastName(resultSet.getString("last_name"));
+                    student.setGroupId(resultSet.getInt("group_id"));
+                    studentList.add(student);
+                }
             }
-
             return studentList;
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
         }
-
     }
 }

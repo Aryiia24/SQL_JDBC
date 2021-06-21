@@ -16,101 +16,98 @@ import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 public class CourseService extends Util implements CourseDAO {
 
     @Override
-    public void add(Course course) throws SQLException {
-        Connection connection = getConnection();
-        PreparedStatement preparedStatement = null;
+    public boolean add(Course course) throws SQLException {
         String sql = "INSERT INTO courses (course_id, course_name, course_description) VALUES(?,?,?)";
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, course.getCourseId());
             preparedStatement.setString(2, course.getCourseName());
             preparedStatement.setString(3, course.getCourseDescription());
             preparedStatement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
+            return false;
         }
     }
 
     @Override
-    public void update(Course course) {
-        throw new UnsupportedOperationException();
+    public boolean update(Course course) throws SQLException {
+        String sql = "UPDATE courses SET course_name=?, course_description=? WHERE course_id=?";
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            preparedStatement.setString(1, course.getCourseName());
+            preparedStatement.setString(2, course.getCourseDescription());
+            preparedStatement.setInt(3, course.getCourseId());
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public List<Course> getAll() throws SQLException {
         List<Course> courseList = new ArrayList<>();
-        Connection connection = getConnection();
-        Statement statement = null;
         String sql = "SELECT course_id, course_name, course_description FROM courses";
-
-        try {
-            statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery(sql);
-
+        try (Connection connection = getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);) {
             while (resultSet.next()) {
-                Course course = new Course();
-                course.setCourseId(resultSet.getInt("course_id"));
-                course.setCourseName(resultSet.getString("course_name"));
-                course.setCourseDescription(resultSet.getString("course_description"));
+                Course course = constructCourseFromTable(resultSet);
                 courseList.add(course);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
-        }
-        return courseList;
-    }
-
-    @Override
-    public Course getById(int id) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(int id) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
-    public List<Course> getListCoursesByStudentCourses(List<StudentCourse> studentCoursesList) throws SQLException {
-        List<Course> courseList = new ArrayList<>();
-        Connection connection = getConnection();
-        PreparedStatement preparedStatement = null;
-        String sql = "SELECT course_id, course_name, course_description FROM courses WHERE course_id = ?";
-
-        try {
-            preparedStatement = connection.prepareStatement(sql);
-            for (StudentCourse studentCourse : studentCoursesList) {
-                preparedStatement.setInt(1, studentCourse.getCourseId());
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    Course course = new Course();
-                    course.setCourseId(resultSet.getInt("course_id"));
-                    course.setCourseName(resultSet.getString("course_name"));
-                    course.setCourseDescription(resultSet.getString("course_description"));
-                    courseList.add(course);
-                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
-
         return courseList;
     }
 
+    @Override
+    public Course getById(int courseId) throws SQLException {
+        String sql = "SELECT course_id, course_name, course_description FROM courses WHERE course_id = ?";
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            preparedStatement.setInt(1, courseId);
+            try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                if (resultSet.next()) {
+                    return constructCourseFromTable(resultSet);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean delete(int courseId) throws SQLException {
+        String sql = "DELETE FROM courses WHERE course_id=?";
+        try (Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            preparedStatement.setInt(1, courseId);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Course> getListCoursesByStudentCourses(List<StudentCourse> studentCoursesList) throws SQLException {
+        List<Course> courseList = new ArrayList<>();
+        for (StudentCourse studentCourse : studentCoursesList) {
+            Course course = getById(studentCourse.getCourseId());
+            courseList.add(course);
+        }
+        return courseList;
+    }
+
+    private static Course constructCourseFromTable(ResultSet resultSet) throws SQLException {
+        Course course = new Course();
+        course.setCourseId(resultSet.getInt("course_id"));
+        course.setCourseName(resultSet.getString("course_name"));
+        course.setCourseDescription(resultSet.getString("course_description"));
+        return course;
+    }
 }

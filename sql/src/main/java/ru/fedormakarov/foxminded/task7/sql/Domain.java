@@ -25,10 +25,11 @@ public class Domain {
 
     public static void main(String[] args) throws SQLException {
 
-        TableCreator tableCreator = new TableCreator();
-        tableCreator.createAndFillTables("createTables.sql");
-        TableBinder tableBinder = new TableBinder();
-        tableBinder.BindTable();
+        /*
+         * TableCreator tableCreator = new TableCreator();
+         * tableCreator.createAndFillTables("createTables.sql"); TableBinder tableBinder
+         * = new TableBinder(); tableBinder.BindTable();
+         */
 
         String selection;
         Scanner input = new Scanner(System.in);
@@ -98,7 +99,7 @@ public class Domain {
             break;
 
         case "f":
-            System.out.println("Enter stident id: ");
+            System.out.println("Enter student id: ");
             int studentIdForDeleteCourse = input.nextInt();
             System.out.println("Student courses: ");
             COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
