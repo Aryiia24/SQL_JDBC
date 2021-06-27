@@ -1,7 +1,7 @@
 package ru.fedormakarov.foxminded.task7.sql.entity;
 
 public class Course {
-    private int courseId;
+    private int id;
     private String courseName;
     private String courseDescription;
 
@@ -10,11 +10,11 @@ public class Course {
     }
 
     public int getCourseId() {
-        return courseId;
+        return id;
     }
 
     public void setCourseId(int courseId) {
-        this.courseId = courseId;
+        this.id = courseId;
     }
 
     public String getCourseName() {
@@ -38,7 +38,7 @@ public class Course {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((courseDescription == null) ? 0 : courseDescription.hashCode());
-        result = prime * result + courseId;
+        result = prime * result + id;
         result = prime * result + ((courseName == null) ? 0 : courseName.hashCode());
         return result;
     }
@@ -57,7 +57,7 @@ public class Course {
                 return false;
         } else if (!courseDescription.equals(other.courseDescription))
             return false;
-        if (courseId != other.courseId)
+        if (id != other.id)
             return false;
         if (courseName == null) {
             if (other.courseName != null)
@@ -65,12 +65,6 @@ public class Course {
         } else if (!courseName.equals(other.courseName))
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "[courseId=" + courseId + ", course_name=" + courseName + ", courseDescription=" + courseDescription
-                + "]";
     }
 
 }

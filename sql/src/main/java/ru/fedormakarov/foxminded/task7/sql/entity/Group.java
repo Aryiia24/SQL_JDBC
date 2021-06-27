@@ -1,7 +1,7 @@
 package ru.fedormakarov.foxminded.task7.sql.entity;
 
 public class Group {
-    private int groupId;
+    private int id;
     private String groupName;
     private int size;
 
@@ -10,11 +10,11 @@ public class Group {
     }
 
     public int getGroupId() {
-        return groupId;
+        return id;
     }
 
     public void setGroupId(int groupId) {
-        this.groupId = groupId;
+        this.id = groupId;
     }
 
     public String getGroupName() {
@@ -37,7 +37,7 @@ public class Group {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + groupId;
+        result = prime * result + id;
         result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
         result = prime * result + size;
         return result;
@@ -52,7 +52,7 @@ public class Group {
         if (getClass() != obj.getClass())
             return false;
         Group other = (Group) obj;
-        if (groupId != other.groupId)
+        if (id != other.id)
             return false;
         if (groupName == null) {
             if (other.groupName != null)
@@ -66,7 +66,7 @@ public class Group {
 
     @Override
     public String toString() {
-        return "[groupId=" + groupId + ", groupName=" + groupName + ", size=" + size + "]";
+        return "[groupId=" + id + ", groupName=" + groupName + ", size=" + size + "]";
     }
 
 }

@@ -13,88 +13,98 @@ import ru.fedormakarov.foxminded.task7.sql.dao.CourseDAO;
 import ru.fedormakarov.foxminded.task7.sql.entity.Course;
 import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 
-public class CourseService extends Util implements CourseDAO {
+public class CourseService implements CourseDAO {
+
+    static Connection connection = Util.getConnection();
 
     @Override
-    public boolean add(Course course) throws SQLException {
+    public boolean add(Course course) {
         String sql = "INSERT INTO courses (course_id, course_name, course_description) VALUES(?,?,?)";
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, course.getCourseId());
             preparedStatement.setString(2, course.getCourseName());
             preparedStatement.setString(3, course.getCourseDescription());
-            preparedStatement.executeUpdate();
-            return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Cannot add Course", e);
         }
+        return false;
     }
 
     @Override
-    public boolean update(Course course) throws SQLException {
+    public boolean update(Course course) {
         String sql = "UPDATE courses SET course_name=?, course_description=? WHERE course_id=?";
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, course.getCourseName());
             preparedStatement.setString(2, course.getCourseDescription());
             preparedStatement.setInt(3, course.getCourseId());
-            preparedStatement.executeUpdate();
-            return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            while (e != null) {
+                System.err.println("Error msg: " + e.getMessage());
+                System.err.println("SQLSTATE: " + e.getSQLState());
+                System.err.println("Error code: " + e.getErrorCode());
+                e.printStackTrace();
+                e = e.getNextException();
+            }
+
         }
+        return false;
     }
 
     @Override
-    public List<Course> getAll() throws SQLException {
+    public List<Course> getAll() {
         List<Course> courseList = new ArrayList<>();
         String sql = "SELECT course_id, course_name, course_description FROM courses";
-        try (Connection connection = getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);) {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             while (resultSet.next()) {
                 Course course = constructCourseFromTable(resultSet);
                 courseList.add(course);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
+            throw new RuntimeException("Cannot get all courses", e);
         }
         return courseList;
     }
 
     @Override
-    public Course getById(int courseId) throws SQLException {
+    public Course getById(int courseId) {
         String sql = "SELECT course_id, course_name, course_description FROM courses WHERE course_id = ?";
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, courseId);
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
                 if (resultSet.next()) {
                     return constructCourseFromTable(resultSet);
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public boolean delete(int courseId) throws SQLException {
+    public boolean delete(int courseId) {
         String sql = "DELETE FROM courses WHERE course_id=?";
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, courseId);
-            preparedStatement.executeUpdate();
-            return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+
         }
+        return false;
     }
 
-    public List<Course> getListCoursesByStudentCourses(List<StudentCourse> studentCoursesList) throws SQLException {
+    public List<Course> getListCoursesByStudentCourses(List<StudentCourse> studentCoursesList) {
         List<Course> courseList = new ArrayList<>();
         for (StudentCourse studentCourse : studentCoursesList) {
             Course course = getById(studentCourse.getCourseId());

@@ -12,13 +12,14 @@ import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
 import ru.fedormakarov.foxminded.task7.sql.dao.GroupDAO;
 import ru.fedormakarov.foxminded.task7.sql.entity.Group;
 
-public class GroupSevice extends Util implements GroupDAO {
+public class GroupSevice implements GroupDAO {
+
+    static Connection connection = Util.getConnection();
 
     @Override
     public boolean add(Group group) throws SQLException {
         String sql = "INSERT into groups (group_id, group_name) VALUES (?,?)";
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, group.getGroupId());
             preparedStatement.setString(2, group.getGroupName());
             preparedStatement.executeUpdate();
@@ -31,11 +32,8 @@ public class GroupSevice extends Util implements GroupDAO {
 
     @Override
     public boolean delete(int groupId) throws SQLException {
-
         String sql = "DELETE FROM groups WHERE group_id=?";
-
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, groupId);
             preparedStatement.executeUpdate();
             return true;
@@ -48,9 +46,7 @@ public class GroupSevice extends Util implements GroupDAO {
     @Override
     public boolean update(Group group) throws SQLException {
         String sql = "UPDATE groups SET group_name=?,size=? WHERE group_id=?";
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, group.getGroupName());
             preparedStatement.setInt(2, group.getSize());
             preparedStatement.setInt(3, group.getGroupId());
@@ -66,15 +62,9 @@ public class GroupSevice extends Util implements GroupDAO {
     public List<Group> getAll() throws SQLException {
         List<Group> groupList = new ArrayList<>();
         String sql = "SELECT group_id, group_name, size FROM groups";
-        try (Connection connection = getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);) {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             while (resultSet.next()) {
-                Group group = new Group();
-                group.setGroupId(resultSet.getInt("group_id"));
-                group.setGroupName(resultSet.getString("group_name"));
-                group.setSize(resultSet.getInt("size"));
-                groupList.add(group);
+                groupList.add(constructGroupFromTable(resultSet));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,8 +76,7 @@ public class GroupSevice extends Util implements GroupDAO {
     public Group getById(int groupId) throws SQLException {
         String sql = "SELECT group_id, group_name, size FROM groups WHERE group_id=?";
         Group group = new Group();
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, groupId);
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
                 if (resultSet.next()) {
@@ -106,16 +95,11 @@ public class GroupSevice extends Util implements GroupDAO {
     public List<Group> getGroupsWithLessStudentCount(int inputStudentCount) throws SQLException {
         List<Group> groupList = new ArrayList<>();
         String sql = "SELECT group_id, group_name, size FROM groups WHERE size<=?";
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, inputStudentCount);
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
                 while (resultSet.next()) {
-                    Group group = new Group();
-                    group.setGroupId(resultSet.getInt("group_id"));
-                    group.setGroupName(resultSet.getString("group_name"));
-                    group.setSize(resultSet.getInt("size"));
-                    groupList.add(group);
+                    groupList.add(constructGroupFromTable(resultSet));
                 }
             }
         } catch (SQLException e) {
@@ -123,5 +107,13 @@ public class GroupSevice extends Util implements GroupDAO {
             throw e;
         }
         return groupList;
+    }
+
+    private static Group constructGroupFromTable(ResultSet resultSet) throws SQLException {
+        Group group = new Group();
+        group.setGroupId(resultSet.getInt("group_id"));
+        group.setGroupName(resultSet.getString("group_name"));
+        group.setSize(resultSet.getInt("size"));
+        return group;
     }
 }

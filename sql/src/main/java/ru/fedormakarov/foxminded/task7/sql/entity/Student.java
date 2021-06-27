@@ -1,10 +1,11 @@
 package ru.fedormakarov.foxminded.task7.sql.entity;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class Student {
 
-    private int studentId;
+    private int id;
     private int groupId;
     private String firstName;
     private String lastName;
@@ -15,11 +16,11 @@ public class Student {
     }
 
     public int getStudentId() {
-        return studentId;
+        return id;
     }
 
     public void setStudentId(int studentId) {
-        this.studentId = studentId;
+        this.id = studentId;
     }
 
     public int getGroupId() {
@@ -46,12 +47,12 @@ public class Student {
         this.lastName = lastName;
     }
 
-    public HashSet<Course> getCourses() {
+    public Set<Course> getCourses() {
         return courses;
     }
 
-    public void setCourses(HashSet<Course> courses) {
-        this.courses = courses;
+    public void setCourses(Set<Course> courses) {
+        this.courses = (HashSet<Course>) courses;
     }
 
     @Override
@@ -61,7 +62,7 @@ public class Student {
         result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
         result = prime * result + groupId;
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-        result = prime * result + studentId;
+        result = prime * result + id;
         return result;
     }
 
@@ -86,14 +87,14 @@ public class Student {
                 return false;
         } else if (!lastName.equals(other.lastName))
             return false;
-        if (studentId != other.studentId)
+        if (id != other.id)
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "[studentId = " + studentId + ", groupId = " + groupId + ", firstName = " + firstName + ", lastName = "
+        return "[studentId = " + id + ", groupId = " + groupId + ", firstName = " + firstName + ", lastName = "
                 + lastName + "]";
     }
 

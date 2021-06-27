@@ -12,15 +12,16 @@ import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
 import ru.fedormakarov.foxminded.task7.sql.dao.StudentCourseDAO;
 import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 
-public class StudentCourseService extends Util implements StudentCourseDAO {
+public class StudentCourseService implements StudentCourseDAO {
+
+    static Connection connection = Util.getConnection();
 
     @Override
     public boolean add(StudentCourse studentCourse) throws SQLException {
 
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?,?)";
 
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, studentCourse.getStudentId());
             preparedStatement.setInt(2, studentCourse.getCourseId());
             preparedStatement.executeUpdate();
@@ -41,9 +42,7 @@ public class StudentCourseService extends Util implements StudentCourseDAO {
         List<StudentCourse> studentCourseList = new ArrayList<>();
         String sql = "SELECT student_id, course_id FROM students_courses";
 
-        try (Connection connection = getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);) {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             while (resultSet.next()) {
                 StudentCourse studentCourse = new StudentCourse();
                 studentCourse.setStudentId(resultSet.getInt("student_id"));
@@ -73,8 +72,7 @@ public class StudentCourseService extends Util implements StudentCourseDAO {
 
         String sql = "SELECT student_id, course_id FROM students_courses WHERE student_id=?";
 
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, studentId);
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
                 while (resultSet.next()) {
@@ -93,8 +91,7 @@ public class StudentCourseService extends Util implements StudentCourseDAO {
     public boolean removeStudentCourse(int studentId, int courseId) throws SQLException {
         String sql = "DELETE FROM students_courses WHERE student_id=? AND course_id=?";
 
-        try (Connection connection = getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, courseId);
             preparedStatement.executeUpdate();

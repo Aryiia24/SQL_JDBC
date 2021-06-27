@@ -7,12 +7,12 @@ import java.sql.Connection;
 import org.junit.jupiter.api.Test;
 
 class UtilTest {
-    Util util = new Util();
+    private static Util util = new Util();
 
     @Test
     void testConection() {
-        Connection connecton = util.getConnection();
-        assertEquals(connecton != null, true);
+        Connection connecton = Util.getConnection();
+        assertTrue(connecton != null);
     }
 
 }

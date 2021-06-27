@@ -34,6 +34,8 @@ class StudentServiceTest {
         student.setFirstName("TestName");
         student.setLastName("TestLastName");
         assertTrue(studentService.add(student));
+        Student actualStudent = studentService.getById(201);
+        assertEquals(student, actualStudent);
     }
 
     @Test
@@ -44,6 +46,8 @@ class StudentServiceTest {
         student.setFirstName("TestName1");
         student.setLastName("TestLastName2");
         assertTrue(studentService.update(student));
+        Student updatedStudent = studentService.getById(201);
+        assertEquals(student, updatedStudent);
     }
 
     @Test
@@ -66,6 +70,5 @@ class StudentServiceTest {
         String courseName = "Math";
         List<Student> studentFromCourse = studentService.getAllStudentsFromCourse(courseName);
         assertNotNull(studentFromCourse);
-
     }
 }

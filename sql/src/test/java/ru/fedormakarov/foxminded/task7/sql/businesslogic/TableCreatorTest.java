@@ -12,14 +12,12 @@ import org.junit.jupiter.api.Test;
 
 class TableCreatorTest {
     TableCreator tableCreator = new TableCreator();
-    Util util = new Util();
+    static Connection connection = Util.getConnection();
 
     @Test
     void testOnCreateStudentTable() throws SQLException {
-        String sql = "SELECT student_id, first_name, last_name, group_id FROM students";
-        try (Connection connection = util.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);) {
+        String sql = "SELECT * FROM students";
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
             String columnName1 = resultSetMetaData.getColumnName(1);
@@ -36,10 +34,8 @@ class TableCreatorTest {
 
     @Test
     void testOnCreateGroupTable() throws SQLException {
-        String sql = "SELECT group_id, group_name, size FROM groups";
-        try (Connection connection = util.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);) {
+        String sql = "SELECT * FROM groups";
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
             String columnName1 = resultSetMetaData.getColumnName(1);
@@ -54,10 +50,8 @@ class TableCreatorTest {
 
     @Test
     void testOnCreateCourseTable() throws SQLException {
-        String sql = "SELECT course_id, course_name, course_description FROM courses";
-        try (Connection connection = util.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);) {
+        String sql = "SELECT * FROM courses";
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
             String columnName1 = resultSetMetaData.getColumnName(1);
@@ -72,10 +66,8 @@ class TableCreatorTest {
 
     @Test
     void testOnCreateStudentCourseTable() throws SQLException {
-        String sql = "SELECT student_id, course_id FROM students_courses";
-        try (Connection connection = util.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);) {
+        String sql = "SELECT * FROM students_courses";
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
             String columnName1 = resultSetMetaData.getColumnName(1);

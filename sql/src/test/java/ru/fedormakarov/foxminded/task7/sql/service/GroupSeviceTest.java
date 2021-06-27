@@ -24,6 +24,9 @@ class GroupSeviceTest {
         testGroup.setGroupName("Test");
         testGroup.setSize(0);
         assertTrue(groupService.add(testGroup));
+        Group actualGroupInTable = groupService.getById(11);
+        assertEquals(testGroup, actualGroupInTable);
+
     }
 
     @Test
@@ -34,12 +37,15 @@ class GroupSeviceTest {
         testGroup.setGroupName("Test2");
         testGroup.setSize(0);
         assertTrue(groupService.update(testGroup));
+        Group updatedGroup = groupService.getById(11);
+        assertEquals(testGroup, updatedGroup);
     }
 
     @Test
     @Order(3)
     void testDeleteMethod() throws SQLException {
         assertTrue(groupService.delete(11));
+        
     }
 
     @Test

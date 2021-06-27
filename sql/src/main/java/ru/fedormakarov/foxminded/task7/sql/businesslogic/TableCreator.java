@@ -4,27 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.prefs.BackingStoreException;
-
 import org.apache.ibatis.jdbc.ScriptRunner;
 
 import ru.fedormakarov.foxminded.task7.sql.entity.Course;
@@ -34,7 +23,10 @@ import ru.fedormakarov.foxminded.task7.sql.service.CourseService;
 import ru.fedormakarov.foxminded.task7.sql.service.GroupSevice;
 import ru.fedormakarov.foxminded.task7.sql.service.StudentService;
 
-public class TableCreator extends Util {
+public class TableCreator {
+
+    static Connection connection = Util.getConnection();
+
     private static final int COUNT_GROUPS = 10;
     private static final int COUNT_STUDENTS = 200;
     private static final int COUNT_COURSES = 10;
@@ -44,17 +36,11 @@ public class TableCreator extends Util {
     private static final int MIN_VALUE = 11;
     private static final int COUNT_OF_LETTERS = 26;
 
-    public void createAndFillTables(String SQLScriptFileName) throws SQLException {
-        try {
-            createEmptyTables(SQLScriptFileName);
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
-
+    public void createAndFillTables(String SQLScriptFileName) {
+        createEmptyTables(SQLScriptFileName);
         List<Student> students = generateListRandomStudents();
         List<Group> groups = generateListRandomGroups();
         List<Course> courses = generateListCourses();
-
         fillStudentTable(students);
         fillGroupTable(groups);
         fillCourseTable(courses);
@@ -86,11 +72,7 @@ public class TableCreator extends Util {
     private void fillCourseTable(List<Course> courses) {
         CourseService courseService = new CourseService();
         for (Course course : courses) {
-            try {
-                courseService.add(course);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            courseService.add(course);
         }
     }
 
@@ -167,8 +149,7 @@ public class TableCreator extends Util {
         return sb.toString();
     }
 
-    private void createEmptyTables(String SQLScriptFileName) throws SQLException {
-        Connection connection = getConnection();
+    private void createEmptyTables(String SQLScriptFileName) {
         try {
             ScriptRunner scriptRunner = new ScriptRunner(connection);
             ClassLoader loader = this.getClass().getClassLoader();
@@ -177,10 +158,6 @@ public class TableCreator extends Util {
             scriptRunner.runScript(reader);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
     }
 

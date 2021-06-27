@@ -22,6 +22,8 @@ class CourseServiceTest {
         course.setCourseName("TestCourseName");
         course.setCourseDescription("Test course description");
         assertTrue(courseService.add(course));
+        Course actualCourse = courseService.getById(11);
+        assertEquals(course, actualCourse);
     }
 
     @Test
@@ -32,6 +34,8 @@ class CourseServiceTest {
         course.setCourseName("TestCourseName! ");
         course.setCourseDescription("Test course description!");
         assertTrue(courseService.update(course));
+        Course actualCourse = courseService.getById(11);
+        assertEquals(course, actualCourse);
     }
 
     @Test

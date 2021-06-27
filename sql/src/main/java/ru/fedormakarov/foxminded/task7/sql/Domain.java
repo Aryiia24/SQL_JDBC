@@ -25,93 +25,93 @@ public class Domain {
 
     public static void main(String[] args) throws SQLException {
 
-        /*
-         * TableCreator tableCreator = new TableCreator();
-         * tableCreator.createAndFillTables("createTables.sql"); TableBinder tableBinder
-         * = new TableBinder(); tableBinder.BindTable();
-         */
+        TableCreator tableCreator = new TableCreator();
+        tableCreator.createAndFillTables("createTables.sql");
+        TableBinder tableBinder = new TableBinder();
+        tableBinder.BindTable();
 
         String selection;
-        Scanner input = new Scanner(System.in);
-        printMenu();
-        selection = input.nextLine();
+        try (Scanner input = new Scanner(System.in)) {
+            printMenu();
+            selection = input.nextLine();
 
-        switch (selection) {
+            switch (selection) {
 
-        case "a":
-            System.out.println("Enter the number of students in group (at least 10):");
-            int countStudent = input.nextInt();
-            GROUP_FORMATTER.showGroups(GROUP_SEVICE.getGroupsWithLessStudentCount(countStudent));
-            break;
+            case "a":
+                System.out.println("Enter the number of students in group (at least 10):");
+                int countStudent = input.nextInt();
+                GROUP_FORMATTER.showGroups(GROUP_SEVICE.getGroupsWithLessStudentCount(countStudent));
+                break;
 
-        case "b":
-            System.out.println("Enter course name:");
-            String courseName = input.nextLine();
-            STUDENT_FORMATTER.showStudents(STUDENT_SERVICE.getAllStudentsFromCourse(courseName));
-            break;
+            case "b":
+                System.out.println("Enter course name:");
+                String courseName = input.nextLine();
+                STUDENT_FORMATTER.showStudents(STUDENT_SERVICE.getAllStudentsFromCourse(courseName));
+                break;
 
-        case "c":
-            Student student = new Student();
+            case "c":
+                Student student = new Student();
 
-            System.out.println("Enter student_id (at least 200):");
-            int studentIdForAdd = input.nextInt();
-            student.setStudentId(studentIdForAdd);
+                System.out.println("Enter student_id (at least 200):");
+                int studentIdForAdd = input.nextInt();
+                student.setStudentId(studentIdForAdd);
 
-            System.out.println("Enter first name student:");
-            String firstName = input.nextLine();
-            student.setFirstName(firstName);
+                System.out.println("Enter first name student:");
+                String firstName = input.nextLine();
+                student.setFirstName(firstName);
 
-            System.out.println("Enter last name student:");
-            String lastName = input.nextLine();
-            student.setLastName(lastName);
+                System.out.println("Enter last name student:");
+                String lastName = input.nextLine();
+                student.setLastName(lastName);
 
-            STUDENT_SERVICE.add(student);
-            System.out.println("Student was added");
-            break;
+                STUDENT_SERVICE.add(student);
+                System.out.println("Student was added");
+                break;
 
-        case "d":
-            System.out.println("Enter student id:");
-            int studentIdForDelete = input.nextInt();
-            STUDENT_SERVICE.delete(studentIdForDelete);
-            System.out.println("Student was deleted");
-            break;
+            case "d":
+                System.out.println("Enter student id:");
+                int studentIdForDelete = input.nextInt();
+                STUDENT_SERVICE.delete(studentIdForDelete);
+                System.out.println("Student was deleted");
+                break;
 
-        case "e":
-            STUDENT_FORMATTER.showStudents(STUDENT_SERVICE.getAll());
+            case "e":
+                STUDENT_FORMATTER.showStudents(STUDENT_SERVICE.getAll());
 
-            System.out.println("Enter student id:");
-            int studentIdForAddCourse = input.nextInt();
+                System.out.println("Enter student id:");
+                int studentIdForAddCourse = input.nextInt();
 
-            System.out.println("Courses that the student already has");
-            COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
-                    STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForAddCourse)));
-            System.out.println("\r\n");
-            System.out.println("All courses:");
-            COURSE_FORMATTER.showCourses(COURSE_SERVICE.getAll());
-            System.out.println("\r\n");
-            System.out.println("Enter the course id where you want to add the student:");
-            int courseId = input.nextInt();
-            StudentCourse studentCourse = new StudentCourse();
-            studentCourse.setStudentId(studentIdForAddCourse);
-            studentCourse.setCourseId(courseId);
-            STUDENT_COURSE_SERVICE.add(studentCourse);
-            System.out.println("Student was added to the course.");
-            break;
+                System.out.println("Courses that the student already has");
+                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
+                        STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForAddCourse)));
+                System.out.println("\r\n");
+                System.out.println("All courses:");
+                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getAll());
+                System.out.println("\r\n");
+                System.out.println("Enter the course id where you want to add the student:");
+                int courseId = input.nextInt();
+                StudentCourse studentCourse = new StudentCourse();
+                studentCourse.setStudentId(studentIdForAddCourse);
+                studentCourse.setCourseId(courseId);
+                STUDENT_COURSE_SERVICE.add(studentCourse);
+                System.out.println("Student was added to the course.");
+                break;
 
-        case "f":
-            System.out.println("Enter student id: ");
-            int studentIdForDeleteCourse = input.nextInt();
-            System.out.println("Student courses: ");
-            COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
-                    STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
-            System.out.println("\r\n");
-            System.out.println("Enter the course id that you want to remove from the student:");
-            int courseIdForDelete = input.nextInt();
-            STUDENT_COURSE_SERVICE.removeStudentCourse(studentIdForDeleteCourse, courseIdForDelete);
-            System.out.println("Done");
-            COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
-                    STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
-            break;
+            case "f":
+                System.out.println("Enter student id: ");
+                int studentIdForDeleteCourse = input.nextInt();
+                System.out.println("Student courses: ");
+                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
+                        STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
+                System.out.println("\r\n");
+                System.out.println("Enter the course id that you want to remove from the student:");
+                int courseIdForDelete = input.nextInt();
+                STUDENT_COURSE_SERVICE.removeStudentCourse(studentIdForDeleteCourse, courseIdForDelete);
+                System.out.println("Done");
+                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
+                        STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
+                break;
+            }
         }
     }
 

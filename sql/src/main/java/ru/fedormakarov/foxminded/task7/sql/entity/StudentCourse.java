@@ -49,9 +49,4 @@ public class StudentCourse {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "StudentCourse [studentId=" + studentId + ", courseId=" + courseId + "]";
-    }
-
 }
