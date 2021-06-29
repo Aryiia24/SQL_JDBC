@@ -15,11 +15,11 @@ import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 
 public class CourseService implements CourseDAO {
 
-    static Connection connection = Util.getConnection();
+    Connection connection = Util.getConnection();
 
     @Override
     public boolean add(Course course) {
-        String sql = "INSERT INTO courses (course_id, course_name, course_description) VALUES(?,?,?)";
+        String sql = "INSERT INTO courses (id, course_name, course_description) VALUES(?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, course.getCourseId());
             preparedStatement.setString(2, course.getCourseName());
@@ -36,7 +36,7 @@ public class CourseService implements CourseDAO {
 
     @Override
     public boolean update(Course course) {
-        String sql = "UPDATE courses SET course_name=?, course_description=? WHERE course_id=?";
+        String sql = "UPDATE courses SET course_name=?, course_description=? WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, course.getCourseName());
             preparedStatement.setString(2, course.getCourseDescription());
@@ -46,13 +46,9 @@ public class CourseService implements CourseDAO {
             }
         } catch (SQLException e) {
             while (e != null) {
-                System.err.println("Error msg: " + e.getMessage());
-                System.err.println("SQLSTATE: " + e.getSQLState());
-                System.err.println("Error code: " + e.getErrorCode());
                 e.printStackTrace();
-                e = e.getNextException();
+                throw new RuntimeException("Cannot update Course", e);
             }
-
         }
         return false;
     }
@@ -60,7 +56,7 @@ public class CourseService implements CourseDAO {
     @Override
     public List<Course> getAll() {
         List<Course> courseList = new ArrayList<>();
-        String sql = "SELECT course_id, course_name, course_description FROM courses";
+        String sql = "SELECT id, course_name, course_description FROM courses";
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             while (resultSet.next()) {
                 Course course = constructCourseFromTable(resultSet);
@@ -75,7 +71,7 @@ public class CourseService implements CourseDAO {
 
     @Override
     public Course getById(int courseId) {
-        String sql = "SELECT course_id, course_name, course_description FROM courses WHERE course_id = ?";
+        String sql = "SELECT id, course_name, course_description FROM courses WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, courseId);
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
@@ -91,7 +87,7 @@ public class CourseService implements CourseDAO {
 
     @Override
     public boolean delete(int courseId) {
-        String sql = "DELETE FROM courses WHERE course_id=?";
+        String sql = "DELETE FROM courses WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, courseId);
             if (preparedStatement.executeUpdate() > 0) {
@@ -115,7 +111,7 @@ public class CourseService implements CourseDAO {
 
     private static Course constructCourseFromTable(ResultSet resultSet) throws SQLException {
         Course course = new Course();
-        course.setCourseId(resultSet.getInt("course_id"));
+        course.setCourseId(resultSet.getInt("id"));
         course.setCourseName(resultSet.getString("course_name"));
         course.setCourseDescription(resultSet.getString("course_description"));
         return course;

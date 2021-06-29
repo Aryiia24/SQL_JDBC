@@ -8,11 +8,17 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class TableCreatorTest {
-    TableCreator tableCreator = new TableCreator();
+    static TableCreator tableCreator = new TableCreator();
     static Connection connection = Util.getConnection();
+
+    @BeforeAll
+    static void init() {
+        tableCreator.createAndFillTables("createTables.sql");
+    }
 
     @Test
     void testOnCreateStudentTable() throws SQLException {
@@ -25,7 +31,7 @@ class TableCreatorTest {
             String columnName3 = resultSetMetaData.getColumnName(3);
             String columnName4 = resultSetMetaData.getColumnName(4);
 
-            assertEquals("student_id", columnName1);
+            assertEquals("id", columnName1);
             assertEquals("first_name", columnName2);
             assertEquals("last_name", columnName3);
             assertEquals("group_id", columnName4);
@@ -42,7 +48,7 @@ class TableCreatorTest {
             String columnName2 = resultSetMetaData.getColumnName(2);
             String columnName3 = resultSetMetaData.getColumnName(3);
 
-            assertEquals("group_id", columnName1);
+            assertEquals("id", columnName1);
             assertEquals("group_name", columnName2);
             assertEquals("size", columnName3);
         }
@@ -58,7 +64,7 @@ class TableCreatorTest {
             String columnName2 = resultSetMetaData.getColumnName(2);
             String columnName3 = resultSetMetaData.getColumnName(3);
 
-            assertEquals("course_id", columnName1);
+            assertEquals("id", columnName1);
             assertEquals("course_name", columnName2);
             assertEquals("course_description", columnName3);
         }

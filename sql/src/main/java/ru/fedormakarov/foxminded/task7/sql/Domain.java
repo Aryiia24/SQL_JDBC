@@ -1,9 +1,11 @@
 package ru.fedormakarov.foxminded.task7.sql;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 import ru.fedormakarov.foxminded.task7.sql.businesslogic.TableBinder;
 import ru.fedormakarov.foxminded.task7.sql.businesslogic.TableCreator;
+import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
 import ru.fedormakarov.foxminded.task7.sql.entity.Student;
 import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 import ru.fedormakarov.foxminded.task7.sql.formatter.CourseFormatter;
@@ -15,23 +17,23 @@ import ru.fedormakarov.foxminded.task7.sql.service.StudentCourseService;
 import ru.fedormakarov.foxminded.task7.sql.service.StudentService;
 
 public class Domain {
-    private static final GroupSevice GROUP_SEVICE = new GroupSevice();
-    private static final StudentService STUDENT_SERVICE = new StudentService();
-    private static final CourseService COURSE_SERVICE = new CourseService();
-    private static final StudentCourseService STUDENT_COURSE_SERVICE = new StudentCourseService();
-    private static final StudentFormatter STUDENT_FORMATTER = new StudentFormatter();
-    private static final GroupFormatter GROUP_FORMATTER = new GroupFormatter();
-    private static final CourseFormatter COURSE_FORMATTER = new CourseFormatter();
 
     public static void main(String[] args) throws SQLException {
 
+        GroupSevice groupService = new GroupSevice();
+        StudentService studentService = new StudentService();
+        CourseService courseService = new CourseService();
+        StudentCourseService studentCourseService = new StudentCourseService();
+        StudentFormatter studentFormatter = new StudentFormatter();
+        GroupFormatter groupFormatter = new GroupFormatter();
+        CourseFormatter courseFormatter = new CourseFormatter();
         TableCreator tableCreator = new TableCreator();
         tableCreator.createAndFillTables("createTables.sql");
         TableBinder tableBinder = new TableBinder();
-        tableBinder.BindTable();
+        tableBinder.bindTable();
 
         String selection;
-        try (Scanner input = new Scanner(System.in)) {
+        try (Scanner input = new Scanner(System.in); Connection connection = Util.getConnection()) {
             printMenu();
             selection = input.nextLine();
 
@@ -40,13 +42,13 @@ public class Domain {
             case "a":
                 System.out.println("Enter the number of students in group (at least 10):");
                 int countStudent = input.nextInt();
-                GROUP_FORMATTER.showGroups(GROUP_SEVICE.getGroupsWithLessStudentCount(countStudent));
+                groupFormatter.showGroups(groupService.getGroupsWithLessStudentCount(countStudent));
                 break;
 
             case "b":
                 System.out.println("Enter course name:");
                 String courseName = input.nextLine();
-                STUDENT_FORMATTER.showStudents(STUDENT_SERVICE.getAllStudentsFromCourse(courseName));
+                studentFormatter.showStudents(studentService.getAllStudentsFromCourse(courseName));
                 break;
 
             case "c":
@@ -64,36 +66,36 @@ public class Domain {
                 String lastName = input.nextLine();
                 student.setLastName(lastName);
 
-                STUDENT_SERVICE.add(student);
+                studentService.add(student);
                 System.out.println("Student was added");
                 break;
 
             case "d":
                 System.out.println("Enter student id:");
                 int studentIdForDelete = input.nextInt();
-                STUDENT_SERVICE.delete(studentIdForDelete);
+                studentService.delete(studentIdForDelete);
                 System.out.println("Student was deleted");
                 break;
 
             case "e":
-                STUDENT_FORMATTER.showStudents(STUDENT_SERVICE.getAll());
+                studentFormatter.showStudents(studentService.getAll());
 
                 System.out.println("Enter student id:");
                 int studentIdForAddCourse = input.nextInt();
 
                 System.out.println("Courses that the student already has");
-                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
-                        STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForAddCourse)));
+                courseFormatter.showCourses(courseService.getListCoursesByStudentCourses(
+                        studentCourseService.getListStudentCoursesByStudentId(studentIdForAddCourse)));
                 System.out.println("\r\n");
                 System.out.println("All courses:");
-                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getAll());
+                courseFormatter.showCourses(courseService.getAll());
                 System.out.println("\r\n");
                 System.out.println("Enter the course id where you want to add the student:");
                 int courseId = input.nextInt();
                 StudentCourse studentCourse = new StudentCourse();
                 studentCourse.setStudentId(studentIdForAddCourse);
                 studentCourse.setCourseId(courseId);
-                STUDENT_COURSE_SERVICE.add(studentCourse);
+                studentCourseService.add(studentCourse);
                 System.out.println("Student was added to the course.");
                 break;
 
@@ -101,15 +103,15 @@ public class Domain {
                 System.out.println("Enter student id: ");
                 int studentIdForDeleteCourse = input.nextInt();
                 System.out.println("Student courses: ");
-                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
-                        STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
+                courseFormatter.showCourses(courseService.getListCoursesByStudentCourses(
+                        studentCourseService.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
                 System.out.println("\r\n");
                 System.out.println("Enter the course id that you want to remove from the student:");
                 int courseIdForDelete = input.nextInt();
-                STUDENT_COURSE_SERVICE.removeStudentCourse(studentIdForDeleteCourse, courseIdForDelete);
+                studentCourseService.removeStudentCourse(studentIdForDeleteCourse, courseIdForDelete);
                 System.out.println("Done");
-                COURSE_FORMATTER.showCourses(COURSE_SERVICE.getListCoursesByStudentCourses(
-                        STUDENT_COURSE_SERVICE.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
+                courseFormatter.showCourses(courseService.getListCoursesByStudentCourses(
+                        studentCourseService.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
                 break;
             }
         }

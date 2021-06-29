@@ -1,7 +1,6 @@
 package ru.fedormakarov.foxminded.task7.sql.businesslogic;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class TableBinder {
     private CourseService courseService = new CourseService();
     private StudentCourseService studentCourseService = new StudentCourseService();
 
-    public void BindTable() throws SQLException {
+    public void bindTable() throws SQLException {
         assignStudentToGroup();
         assignStudentToCourses();
         System.out.println("Binding succesfull!");

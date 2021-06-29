@@ -7,7 +7,6 @@ import java.sql.Connection;
 import org.junit.jupiter.api.Test;
 
 class UtilTest {
-    private static Util util = new Util();
 
     @Test
     void testConection() {

@@ -41,10 +41,10 @@ class CourseServiceTest {
     @Test
     @Order(4)
     void testGetByIdMethod() throws SQLException {
-        int course_id = 1;
-        Course course = courseService.getById(course_id);
+        int courseId = 1;
+        Course course = courseService.getById(courseId);
         assertNotNull(course);
-        assertEquals(course_id, course.getCourseId());
+        assertEquals(courseId, course.getCourseId());
     }
 
     @Test

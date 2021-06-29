@@ -25,12 +25,9 @@ import ru.fedormakarov.foxminded.task7.sql.service.StudentService;
 
 public class TableCreator {
 
-    static Connection connection = Util.getConnection();
-
     private static final int COUNT_GROUPS = 10;
     private static final int COUNT_STUDENTS = 200;
     private static final int COUNT_COURSES = 10;
-
     private static final char HYPHEN = '-';
     private static final int MAX_VALUE = 100;
     private static final int MIN_VALUE = 11;
@@ -50,11 +47,7 @@ public class TableCreator {
     private void fillStudentTable(List<Student> students) {
         StudentService studentService = new StudentService();
         for (Student student : students) {
-            try {
-                studentService.add(student);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            studentService.add(student);
         }
     }
 
@@ -77,8 +70,8 @@ public class TableCreator {
     }
 
     private List<Course> generateListCourses() {
-        List<Course> listCourses = new ArrayList<Course>(COUNT_COURSES);
-        Map<String, String> courses = new HashMap<String, String>();
+        List<Course> listCourses = new ArrayList<>(COUNT_COURSES);
+        Map<String, String> courses = new HashMap<>();
         courses.put("Math", "Math course");
         courses.put("Biology", "Biology course");
         courses.put("Chemistry", "Chemistry course");
@@ -150,14 +143,16 @@ public class TableCreator {
     }
 
     private void createEmptyTables(String SQLScriptFileName) {
+
         try {
+            Connection connection = Util.getConnection();
             ScriptRunner scriptRunner = new ScriptRunner(connection);
             ClassLoader loader = this.getClass().getClassLoader();
             File sqlScript = new File(loader.getResource(SQLScriptFileName).getFile());
             Reader reader = new BufferedReader(new FileReader(sqlScript));
             scriptRunner.runScript(reader);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Script file not found", e);
         }
     }
 

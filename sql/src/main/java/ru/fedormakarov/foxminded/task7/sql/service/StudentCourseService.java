@@ -24,12 +24,14 @@ public class StudentCourseService implements StudentCourseDAO {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, studentCourse.getStudentId());
             preparedStatement.setInt(2, studentCourse.getCourseId());
-            preparedStatement.executeUpdate();
-            return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Can't add studentCourse into table", e);
         }
+        return false;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class StudentCourseService implements StudentCourseDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
+            throw new RuntimeException("Can't get all studentCourses", e);
         }
         return studentCourseList;
     }
@@ -84,6 +86,7 @@ public class StudentCourseService implements StudentCourseDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Can't get studentCourses by student_id", e);
         }
         return studentCourseList;
     }
@@ -94,11 +97,15 @@ public class StudentCourseService implements StudentCourseDAO {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, courseId);
-            preparedStatement.executeUpdate();
-            return true;
+            
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
+            
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Can't remove studentCourse", e);
         }
+        return false;
     }
 }

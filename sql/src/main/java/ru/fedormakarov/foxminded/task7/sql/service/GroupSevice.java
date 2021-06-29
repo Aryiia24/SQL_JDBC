@@ -14,11 +14,11 @@ import ru.fedormakarov.foxminded.task7.sql.entity.Group;
 
 public class GroupSevice implements GroupDAO {
 
-    static Connection connection = Util.getConnection();
+    Connection connection = Util.getConnection();
 
     @Override
     public boolean add(Group group) throws SQLException {
-        String sql = "INSERT into groups (group_id, group_name) VALUES (?,?)";
+        String sql = "INSERT into groups (id, group_name) VALUES (?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, group.getGroupId());
             preparedStatement.setString(2, group.getGroupName());
@@ -32,7 +32,7 @@ public class GroupSevice implements GroupDAO {
 
     @Override
     public boolean delete(int groupId) throws SQLException {
-        String sql = "DELETE FROM groups WHERE group_id=?";
+        String sql = "DELETE FROM groups WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, groupId);
             preparedStatement.executeUpdate();
@@ -45,7 +45,7 @@ public class GroupSevice implements GroupDAO {
 
     @Override
     public boolean update(Group group) throws SQLException {
-        String sql = "UPDATE groups SET group_name=?,size=? WHERE group_id=?";
+        String sql = "UPDATE groups SET group_name=?,size=? WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, group.getGroupName());
             preparedStatement.setInt(2, group.getSize());
@@ -61,7 +61,7 @@ public class GroupSevice implements GroupDAO {
     @Override
     public List<Group> getAll() throws SQLException {
         List<Group> groupList = new ArrayList<>();
-        String sql = "SELECT group_id, group_name, size FROM groups";
+        String sql = "SELECT id, group_name, size FROM groups";
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
             while (resultSet.next()) {
                 groupList.add(constructGroupFromTable(resultSet));
@@ -74,13 +74,13 @@ public class GroupSevice implements GroupDAO {
 
     @Override
     public Group getById(int groupId) throws SQLException {
-        String sql = "SELECT group_id, group_name, size FROM groups WHERE group_id=?";
+        String sql = "SELECT id, group_name, size FROM groups WHERE id=?";
         Group group = new Group();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, groupId);
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
                 if (resultSet.next()) {
-                    group.setGroupId(resultSet.getInt("group_id"));
+                    group.setGroupId(resultSet.getInt("id"));
                     group.setGroupName(resultSet.getString("group_name"));
                     group.setSize(resultSet.getInt("size"));
                 }
@@ -94,7 +94,7 @@ public class GroupSevice implements GroupDAO {
 
     public List<Group> getGroupsWithLessStudentCount(int inputStudentCount) throws SQLException {
         List<Group> groupList = new ArrayList<>();
-        String sql = "SELECT group_id, group_name, size FROM groups WHERE size<=?";
+        String sql = "SELECT id, group_name, size FROM groups WHERE size<=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, inputStudentCount);
             try (ResultSet resultSet = preparedStatement.executeQuery();) {
@@ -111,7 +111,7 @@ public class GroupSevice implements GroupDAO {
 
     private static Group constructGroupFromTable(ResultSet resultSet) throws SQLException {
         Group group = new Group();
-        group.setGroupId(resultSet.getInt("group_id"));
+        group.setGroupId(resultSet.getInt("id"));
         group.setGroupName(resultSet.getString("group_name"));
         group.setSize(resultSet.getInt("size"));
         return group;
