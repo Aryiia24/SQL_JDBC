@@ -16,20 +16,20 @@ import org.junit.jupiter.api.Order;
 @TestMethodOrder(OrderAnnotation.class)
 class StudentCourseServiceTest {
 
-    private final StudentCourseService studentCourseService = new StudentCourseService();
+    private StudentCourseService studentCourseService = new StudentCourseService();
 
     @Test
     @Order(1)
-    void testAddStudentCourseMethod() throws SQLException {
+    void testAddStudentCourseMethod() {
         StudentCourse studentCourse = new StudentCourse();
         studentCourse.setStudentId(3);
         studentCourse.setCourseId(4);
-        assertTrue(studentCourseService.add(studentCourse));
+        assertTrue(studentCourseService.save(studentCourse));
     }
 
     @Test
     @Order(2)
-    void testRemoveStudentCourseMethod() throws SQLException {
+    void testRemoveStudentCourseMethod() {
         assertTrue(studentCourseService.removeStudentCourse(3, 4));
     }
 

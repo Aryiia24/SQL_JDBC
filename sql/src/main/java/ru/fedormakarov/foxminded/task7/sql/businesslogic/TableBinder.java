@@ -87,7 +87,7 @@ public class TableBinder {
             StudentCourse studentCourse = new StudentCourse();
             studentCourse.setStudentId(student.getStudentId());
             studentCourse.setCourseId(course.getCourseId());
-            studentCourseService.add(studentCourse);
+            studentCourseService.save(studentCourse);
         }
     }
 }

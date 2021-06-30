@@ -47,25 +47,23 @@ public class TableCreator {
     private void fillStudentTable(List<Student> students) {
         StudentService studentService = new StudentService();
         for (Student student : students) {
-            studentService.add(student);
+            studentService.save(student);
         }
     }
 
     private void fillGroupTable(List<Group> groups) {
         GroupSevice groupSevice = new GroupSevice();
         for (Group group : groups) {
-            try {
-                groupSevice.add(group);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+            groupSevice.save(group);
+
         }
     }
 
     private void fillCourseTable(List<Course> courses) {
         CourseService courseService = new CourseService();
         for (Course course : courses) {
-            courseService.add(course);
+            courseService.save(course);
         }
     }
 
@@ -145,7 +143,7 @@ public class TableCreator {
     private void createEmptyTables(String SQLScriptFileName) {
 
         try {
-            Connection connection = Util.getInstance().getConnection();
+            Connection connection = DatabaseConnector.getInstance().getConnection();
             ScriptRunner scriptRunner = new ScriptRunner(connection);
             ClassLoader loader = this.getClass().getClassLoader();
             File sqlScript = new File(loader.getResource(SQLScriptFileName).getFile());

@@ -12,7 +12,7 @@ import ru.fedormakarov.foxminded.task7.sql.entity.Course;
 
 @TestMethodOrder(OrderAnnotation.class)
 class CourseServiceTest {
-    private final CourseService courseService = new CourseService();
+    private CourseService courseService = new CourseService();
 
     @Test
     @Order(1)
@@ -21,7 +21,7 @@ class CourseServiceTest {
         course.setCourseId(11);
         course.setCourseName("TestCourseName");
         course.setCourseDescription("Test course description");
-        assertTrue(courseService.add(course));
+        assertTrue(courseService.save(course));
         Course actualCourse = courseService.getById(11);
         assertEquals(course, actualCourse);
     }

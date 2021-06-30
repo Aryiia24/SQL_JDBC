@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 import ru.fedormakarov.foxminded.task7.sql.businesslogic.TableBinder;
 import ru.fedormakarov.foxminded.task7.sql.businesslogic.TableCreator;
-import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
+import ru.fedormakarov.foxminded.task7.sql.businesslogic.DatabaseConnector;
 import ru.fedormakarov.foxminded.task7.sql.entity.Student;
 import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 import ru.fedormakarov.foxminded.task7.sql.formatter.CourseFormatter;
@@ -35,7 +35,7 @@ public class Domain {
         CourseFormatter courseFormatter = new CourseFormatter();
 
         String selection;
-        try (Scanner input = new Scanner(System.in); Connection connection = Util.getInstance().getConnection()) {
+        try (Scanner input = new Scanner(System.in); Connection connection = DatabaseConnector.getInstance().getConnection()) {
             printMenu();
             selection = input.nextLine();
 
@@ -68,7 +68,7 @@ public class Domain {
                 String lastName = input.nextLine();
                 student.setLastName(lastName);
 
-                studentService.add(student);
+                studentService.save(student);
                 System.out.println("Student was added");
                 break;
 
@@ -97,7 +97,7 @@ public class Domain {
                 StudentCourse studentCourse = new StudentCourse();
                 studentCourse.setStudentId(studentIdForAddCourse);
                 studentCourse.setCourseId(courseId);
-                studentCourseService.add(studentCourse);
+                studentCourseService.save(studentCourse);
                 System.out.println("Student was added to the course.");
                 break;
 

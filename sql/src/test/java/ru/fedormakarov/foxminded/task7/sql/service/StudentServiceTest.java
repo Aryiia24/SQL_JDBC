@@ -15,12 +15,12 @@ import ru.fedormakarov.foxminded.task7.sql.entity.Student;
 @TestMethodOrder(OrderAnnotation.class)
 class StudentServiceTest {
 
-    private final StudentService studentService = new StudentService();
+    private StudentService studentService = new StudentService();
 
     @Test
     @DisplayName("Method StudentService.getById() should return Student")
     @Order(1)
-    void testGetStudentByIdMethod() throws SQLException {
+    void testGetStudentByIdMethod() {
         Student student = studentService.getById(1);
         assertEquals(Student.class, student.getClass());
         assertNotNull(student);
@@ -28,19 +28,19 @@ class StudentServiceTest {
 
     @Test
     @Order(2)
-    void testAddStudentMethod() throws SQLException {
+    void testAddStudentMethod() {
         Student student = new Student();
         student.setStudentId(201);
         student.setFirstName("TestName");
         student.setLastName("TestLastName");
-        assertTrue(studentService.add(student));
+        assertTrue(studentService.save(student));
         Student actualStudent = studentService.getById(201);
         assertEquals(student, actualStudent);
     }
 
     @Test
     @Order(3)
-    void testUpdateStudentMethod() throws SQLException {
+    void testUpdateStudentMethod() {
         Student student = new Student();
         student.setStudentId(201);
         student.setFirstName("TestName1");
@@ -52,13 +52,13 @@ class StudentServiceTest {
 
     @Test
     @Order(4)
-    void testDeleteMethod() throws SQLException {
+    void testDeleteMethod() {
         assertTrue(studentService.delete(201));
     }
 
     @Test
     @Order(5)
-    void testGetAllMethod() throws SQLException {
+    void testGetAllMethod() {
         List<Student> studentList = studentService.getAll();
         assertEquals(200, studentList.size());
         assertNotNull(studentList);
@@ -66,7 +66,7 @@ class StudentServiceTest {
 
     @Test
     @Order(6)
-    void testgetAllStudentsFromCourseMethod() throws SQLException {
+    void testgetAllStudentsFromCourseMethod() {
         String courseName = "Math";
         List<Student> studentFromCourse = studentService.getAllStudentsFromCourse(courseName);
         assertNotNull(studentFromCourse);

@@ -7,13 +7,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
+import ru.fedormakarov.foxminded.task7.sql.businesslogic.DatabaseConnector;
 import ru.fedormakarov.foxminded.task7.sql.dao.StudentDAO;
 import ru.fedormakarov.foxminded.task7.sql.entity.Student;
 
 public class StudentService implements StudentDAO {
 
-    Connection connection = Util.getInstance().getConnection();
+    private Connection connection = DatabaseConnector.getInstance().getConnection();
 
     @Override
     public Student getById(int studentId) {
@@ -36,21 +36,21 @@ public class StudentService implements StudentDAO {
     }
 
     @Override
-    public boolean add(Student student) {
+    public boolean save(Student student) {
         String sql = "INSERT INTO students (id, first_name, last_name, group_id) VALUES (?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, student.getStudentId());
             preparedStatement.setString(2, student.getFirstName());
             preparedStatement.setString(3, student.getLastName());
             preparedStatement.setInt(4, student.getGroupId());
-            preparedStatement.executeUpdate();
-            return true;
-
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Cannot add Student", e);
         }
-
+        return false;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class StudentService implements StudentDAO {
         String sql = "DELETE FROM students WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, studentId);
-            preparedStatement.executeUpdate();
+
             if (preparedStatement.executeUpdate() > 0) {
                 return true;
             }
@@ -77,7 +77,6 @@ public class StudentService implements StudentDAO {
             preparedStatement.setString(2, student.getLastName());
             preparedStatement.setInt(3, student.getGroupId());
             preparedStatement.setInt(4, student.getStudentId());
-            preparedStatement.executeUpdate();
             if (preparedStatement.executeUpdate() > 0) {
                 return true;
             }
@@ -122,12 +121,17 @@ public class StudentService implements StudentDAO {
         }
     }
 
-    private static Student constructStudentFromTable(ResultSet resultSet) throws SQLException {
+    private static Student constructStudentFromTable(ResultSet resultSet) {
         Student student = new Student();
-        student.setStudentId(resultSet.getInt("id"));
-        student.setFirstName(resultSet.getString("first_name"));
-        student.setLastName(resultSet.getString("last_name"));
-        student.setGroupId(resultSet.getInt("group_id"));
+        try {
+            student.setStudentId(resultSet.getInt("id"));
+            student.setFirstName(resultSet.getString("first_name"));
+            student.setLastName(resultSet.getString("last_name"));
+            student.setGroupId(resultSet.getInt("group_id"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Can't construct student", e);
+        }
         return student;
     }
 }

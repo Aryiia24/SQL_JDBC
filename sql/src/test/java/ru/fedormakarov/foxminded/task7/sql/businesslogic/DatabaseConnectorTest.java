@@ -6,11 +6,11 @@ import java.sql.Connection;
 
 import org.junit.jupiter.api.Test;
 
-class UtilTest {
+class DatabaseConnectorTest {
 
     @Test
     void testConection() {
-        Connection connecton = Util.getInstance().getConnection();
+        Connection connecton = DatabaseConnector.getInstance().getConnection();
         assertTrue(connecton != null);
     }
 

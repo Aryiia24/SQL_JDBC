@@ -14,7 +14,7 @@ import ru.fedormakarov.foxminded.task7.sql.entity.Group;
 @TestMethodOrder(OrderAnnotation.class)
 class GroupSeviceTest {
 
-    private final GroupSevice groupService = new GroupSevice();
+    private GroupSevice groupService = new GroupSevice();
 
     @Test
     @Order(1)
@@ -23,7 +23,7 @@ class GroupSeviceTest {
         testGroup.setGroupId(11);
         testGroup.setGroupName("Test");
         testGroup.setSize(0);
-        assertTrue(groupService.add(testGroup));
+        assertTrue(groupService.save(testGroup));
         Group actualGroupInTable = groupService.getById(11);
         assertEquals(testGroup, actualGroupInTable);
 
@@ -45,7 +45,7 @@ class GroupSeviceTest {
     @Order(3)
     void testDeleteMethod() throws SQLException {
         assertTrue(groupService.delete(11));
-        
+
     }
 
     @Test

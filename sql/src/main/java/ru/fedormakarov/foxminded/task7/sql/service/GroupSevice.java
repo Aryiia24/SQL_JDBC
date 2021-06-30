@@ -8,58 +8,64 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
+import ru.fedormakarov.foxminded.task7.sql.businesslogic.DatabaseConnector;
 import ru.fedormakarov.foxminded.task7.sql.dao.GroupDAO;
 import ru.fedormakarov.foxminded.task7.sql.entity.Group;
 
 public class GroupSevice implements GroupDAO {
 
-    Connection connection = Util.getInstance().getConnection();
+    private Connection connection = DatabaseConnector.getInstance().getConnection();
 
     @Override
-    public boolean add(Group group) throws SQLException {
+    public boolean save(Group group) {
         String sql = "INSERT into groups (id, group_name) VALUES (?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, group.getGroupId());
             preparedStatement.setString(2, group.getGroupName());
-            preparedStatement.executeUpdate();
-            return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Can't save group", e);
         }
+        return false;
     }
 
     @Override
-    public boolean delete(int groupId) throws SQLException {
+    public boolean delete(int groupId) {
         String sql = "DELETE FROM groups WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, groupId);
-            preparedStatement.executeUpdate();
-            return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Can't delete group", e);
         }
+        return false;
     }
 
     @Override
-    public boolean update(Group group) throws SQLException {
+    public boolean update(Group group) {
         String sql = "UPDATE groups SET group_name=?,size=? WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setString(1, group.getGroupName());
             preparedStatement.setInt(2, group.getSize());
             preparedStatement.setInt(3, group.getGroupId());
-            preparedStatement.executeUpdate();
-            return true;
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Can't update group", e);
         }
+        return false;
     }
 
     @Override
-    public List<Group> getAll() throws SQLException {
+    public List<Group> getAll() {
         List<Group> groupList = new ArrayList<>();
         String sql = "SELECT id, group_name, size FROM groups";
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql);) {
@@ -68,12 +74,13 @@ public class GroupSevice implements GroupDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Can't get all groups", e);
         }
         return groupList;
     }
 
     @Override
-    public Group getById(int groupId) throws SQLException {
+    public Group getById(int groupId) {
         String sql = "SELECT id, group_name, size FROM groups WHERE id=?";
         Group group = new Group();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
@@ -87,12 +94,12 @@ public class GroupSevice implements GroupDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
+            throw new RuntimeException("Can't get group", e);
         }
         return group;
     }
 
-    public List<Group> getGroupsWithLessStudentCount(int inputStudentCount) throws SQLException {
+    public List<Group> getGroupsWithLessStudentCount(int inputStudentCount) {
         List<Group> groupList = new ArrayList<>();
         String sql = "SELECT id, group_name, size FROM groups WHERE size<=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
@@ -104,16 +111,22 @@ public class GroupSevice implements GroupDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;
+            throw new RuntimeException("Can't get groups", e);
         }
         return groupList;
     }
 
-    private static Group constructGroupFromTable(ResultSet resultSet) throws SQLException {
+    private static Group constructGroupFromTable(ResultSet resultSet) {
         Group group = new Group();
-        group.setGroupId(resultSet.getInt("id"));
-        group.setGroupName(resultSet.getString("group_name"));
-        group.setSize(resultSet.getInt("size"));
+        try {
+            group.setGroupId(resultSet.getInt("id"));
+            group.setGroupName(resultSet.getString("group_name"));
+            group.setSize(resultSet.getInt("size"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Can't construct group", e);
+        }
+
         return group;
     }
 }

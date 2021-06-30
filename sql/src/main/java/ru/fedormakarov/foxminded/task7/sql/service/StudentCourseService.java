@@ -8,16 +8,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
+import ru.fedormakarov.foxminded.task7.sql.businesslogic.DatabaseConnector;
 import ru.fedormakarov.foxminded.task7.sql.dao.StudentCourseDAO;
 import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 
 public class StudentCourseService implements StudentCourseDAO {
 
-    static Connection connection = Util.getInstance().getConnection();
+    private Connection connection = DatabaseConnector.getInstance().getConnection();
 
     @Override
-    public boolean add(StudentCourse studentCourse) throws SQLException {
+    public boolean save(StudentCourse studentCourse) {
 
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?,?)";
 
@@ -40,7 +40,7 @@ public class StudentCourseService implements StudentCourseDAO {
     }
 
     @Override
-    public List<StudentCourse> getAll() throws SQLException {
+    public List<StudentCourse> getAll() {
         List<StudentCourse> studentCourseList = new ArrayList<>();
         String sql = "SELECT student_id, course_id FROM students_courses";
 
@@ -59,17 +59,17 @@ public class StudentCourseService implements StudentCourseDAO {
     }
 
     @Override
-    public boolean delete(int id) throws SQLException {
+    public boolean delete(int id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public StudentCourse getById(int id) throws SQLException {
+    public StudentCourse getById(int id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<StudentCourse> getListStudentCoursesByStudentId(int studentId) throws SQLException {
+    public List<StudentCourse> getListStudentCoursesByStudentId(int studentId) {
         List<StudentCourse> studentCourseList = new ArrayList<>();
 
         String sql = "SELECT student_id, course_id FROM students_courses WHERE student_id=?";
@@ -91,7 +91,7 @@ public class StudentCourseService implements StudentCourseDAO {
         return studentCourseList;
     }
 
-    public boolean removeStudentCourse(int studentId, int courseId) throws SQLException {
+    public boolean removeStudentCourse(int studentId, int courseId) {
         String sql = "DELETE FROM students_courses WHERE student_id=? AND course_id=?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {

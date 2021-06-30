@@ -8,17 +8,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.fedormakarov.foxminded.task7.sql.businesslogic.Util;
+import ru.fedormakarov.foxminded.task7.sql.businesslogic.DatabaseConnector;
 import ru.fedormakarov.foxminded.task7.sql.dao.CourseDAO;
 import ru.fedormakarov.foxminded.task7.sql.entity.Course;
 import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 
 public class CourseService implements CourseDAO {
 
-    Connection connection = Util.getInstance().getConnection();
+    private Connection connection = DatabaseConnector.getInstance().getConnection();
 
     @Override
-    public boolean add(Course course) {
+    public boolean save(Course course) {
         String sql = "INSERT INTO courses (id, course_name, course_description) VALUES(?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, course.getCourseId());
@@ -29,7 +29,7 @@ public class CourseService implements CourseDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Cannot add Course", e);
+            throw new RuntimeException("Can't add Course", e);
         }
         return false;
     }
@@ -45,10 +45,9 @@ public class CourseService implements CourseDAO {
                 return true;
             }
         } catch (SQLException e) {
-            while (e != null) {
-                e.printStackTrace();
-                throw new RuntimeException("Cannot update Course", e);
-            }
+            e.printStackTrace();
+            throw new RuntimeException("Can't update Course", e);
+
         }
         return false;
     }
@@ -64,7 +63,7 @@ public class CourseService implements CourseDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Cannot get all courses", e);
+            throw new RuntimeException("Can't get all courses", e);
         }
         return courseList;
     }
@@ -81,6 +80,7 @@ public class CourseService implements CourseDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Can't get course", e);
         }
         return null;
     }
@@ -95,6 +95,7 @@ public class CourseService implements CourseDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Can't delete course", e);
 
         }
         return false;

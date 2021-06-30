@@ -4,15 +4,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Util {
-    private static Util instance;
+public class DatabaseConnector {
+    private static DatabaseConnector instance;
     private Connection connection = null;
     private static final String DB_DRIVER = "org.postgresql.Driver";
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "postgres";
     private static final String PASSWORD = "1234";
 
-    private Util() {
+    private DatabaseConnector() {
         try {
             Class.forName(DB_DRIVER);
             this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -27,7 +27,7 @@ public class Util {
 
     public Connection getConnection() {
         if (instance == null) {
-            instance = new Util();
+            instance = new DatabaseConnector();
         }
         try {
             connection.setAutoCommit(true);
@@ -37,13 +37,13 @@ public class Util {
         return connection;
     }
 
-    public static Util getInstance() {
+    public static DatabaseConnector getInstance() {
         if (instance == null) {
-            instance = new Util();
+            instance = new DatabaseConnector();
         } else
             try {
                 if (instance.getConnection().isClosed()) {
-                    instance = new Util();
+                    instance = new DatabaseConnector();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
