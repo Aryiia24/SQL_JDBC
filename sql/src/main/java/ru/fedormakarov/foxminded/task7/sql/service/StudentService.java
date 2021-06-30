@@ -13,7 +13,7 @@ import ru.fedormakarov.foxminded.task7.sql.entity.Student;
 
 public class StudentService implements StudentDAO {
 
-    Connection connection = Util.getConnection();
+    Connection connection = Util.getInstance().getConnection();
 
     @Override
     public Student getById(int studentId) {
@@ -43,14 +43,14 @@ public class StudentService implements StudentDAO {
             preparedStatement.setString(2, student.getFirstName());
             preparedStatement.setString(3, student.getLastName());
             preparedStatement.setInt(4, student.getGroupId());
-            if (preparedStatement.executeUpdate() > 0) {
-                return true;
-            }
+            preparedStatement.executeUpdate();
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Cannot add Student", e);
         }
-        return false;
+
     }
 
     @Override

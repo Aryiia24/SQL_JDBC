@@ -14,7 +14,7 @@ import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 
 public class StudentCourseService implements StudentCourseDAO {
 
-    static Connection connection = Util.getConnection();
+    static Connection connection = Util.getInstance().getConnection();
 
     @Override
     public boolean add(StudentCourse studentCourse) throws SQLException {
@@ -97,11 +97,11 @@ public class StudentCourseService implements StudentCourseDAO {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, courseId);
-            
+
             if (preparedStatement.executeUpdate() > 0) {
                 return true;
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Can't remove studentCourse", e);

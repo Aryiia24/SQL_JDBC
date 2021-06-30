@@ -15,7 +15,7 @@ import ru.fedormakarov.foxminded.task7.sql.entity.StudentCourse;
 
 public class CourseService implements CourseDAO {
 
-    Connection connection = Util.getConnection();
+    Connection connection = Util.getInstance().getConnection();
 
     @Override
     public boolean add(Course course) {

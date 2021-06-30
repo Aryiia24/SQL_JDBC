@@ -130,7 +130,7 @@ public class TableCreator {
         return students;
     }
 
-    public String generateGroupName() {
+    private String generateGroupName() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         char firstCharacter = (char) (random.nextInt(COUNT_OF_LETTERS) + 'a');
@@ -145,7 +145,7 @@ public class TableCreator {
     private void createEmptyTables(String SQLScriptFileName) {
 
         try {
-            Connection connection = Util.getConnection();
+            Connection connection = Util.getInstance().getConnection();
             ScriptRunner scriptRunner = new ScriptRunner(connection);
             ClassLoader loader = this.getClass().getClassLoader();
             File sqlScript = new File(loader.getResource(SQLScriptFileName).getFile());

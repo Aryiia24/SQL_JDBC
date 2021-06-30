@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class Util {
     private static Util instance;
-    private static Connection connection = null;
+    private Connection connection = null;
     private static final String DB_DRIVER = "org.postgresql.Driver";
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "postgres";
@@ -15,20 +15,41 @@ public class Util {
     private Util() {
         try {
             Class.forName(DB_DRIVER);
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new RuntimeException("Class not found", e);
+            throw new RuntimeException("Driver not found", e);
         } catch (SQLException e1) {
             e1.printStackTrace();
-            throw new RuntimeException("Connection not found", e1);
+            throw new RuntimeException("Connection failed", e1);
         }
     }
 
-    public static Connection getConnection() {
+    public Connection getConnection() {
         if (instance == null) {
             instance = new Util();
         }
+        try {
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return connection;
+    }
+
+    public static Util getInstance() {
+        if (instance == null) {
+            instance = new Util();
+        } else
+            try {
+                if (instance.getConnection().isClosed()) {
+                    instance = new Util();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Connection failed");
+            }
+
+        return instance;
     }
 }

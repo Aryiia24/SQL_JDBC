@@ -10,7 +10,7 @@ class UtilTest {
 
     @Test
     void testConection() {
-        Connection connecton = Util.getConnection();
+        Connection connecton = Util.getInstance().getConnection();
         assertTrue(connecton != null);
     }
 

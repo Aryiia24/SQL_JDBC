@@ -14,7 +14,7 @@ import ru.fedormakarov.foxminded.task7.sql.entity.Group;
 
 public class GroupSevice implements GroupDAO {
 
-    Connection connection = Util.getConnection();
+    Connection connection = Util.getInstance().getConnection();
 
     @Override
     public boolean add(Group group) throws SQLException {

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class TableCreatorTest {
     static TableCreator tableCreator = new TableCreator();
-    static Connection connection = Util.getConnection();
+    static Connection connection = Util.getInstance().getConnection();
 
     @BeforeAll
     static void init() {

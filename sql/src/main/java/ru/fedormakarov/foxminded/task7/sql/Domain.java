@@ -20,6 +20,12 @@ public class Domain {
 
     public static void main(String[] args) throws SQLException {
 
+        TableCreator tableCreator = new TableCreator();
+        tableCreator.createAndFillTables("createTables.sql");
+
+        TableBinder tableBinder = new TableBinder();
+        tableBinder.bindTable();
+
         GroupSevice groupService = new GroupSevice();
         StudentService studentService = new StudentService();
         CourseService courseService = new CourseService();
@@ -27,13 +33,9 @@ public class Domain {
         StudentFormatter studentFormatter = new StudentFormatter();
         GroupFormatter groupFormatter = new GroupFormatter();
         CourseFormatter courseFormatter = new CourseFormatter();
-        TableCreator tableCreator = new TableCreator();
-        tableCreator.createAndFillTables("createTables.sql");
-        TableBinder tableBinder = new TableBinder();
-        tableBinder.bindTable();
 
         String selection;
-        try (Scanner input = new Scanner(System.in); Connection connection = Util.getConnection()) {
+        try (Scanner input = new Scanner(System.in); Connection connection = Util.getInstance().getConnection()) {
             printMenu();
             selection = input.nextLine();
 
@@ -112,6 +114,7 @@ public class Domain {
                 System.out.println("Done");
                 courseFormatter.showCourses(courseService.getListCoursesByStudentCourses(
                         studentCourseService.getListStudentCoursesByStudentId(studentIdForDeleteCourse)));
+                connection.close();
                 break;
             }
         }
