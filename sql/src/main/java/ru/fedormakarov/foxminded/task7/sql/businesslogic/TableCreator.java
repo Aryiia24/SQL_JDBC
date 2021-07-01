@@ -104,7 +104,7 @@ public class TableCreator {
     }
 
     private List<Student> generateListRandomStudents() {
-        List<Student> students = new ArrayList<Student>();
+        List<Student> students = new ArrayList<>();
         Random random = new Random();
 
         String[] names = { "Fedor", "Yaroslav", "Konstantin", "Andrey", "Vasislisa", "Alisa", "Nikita", "Sergey",

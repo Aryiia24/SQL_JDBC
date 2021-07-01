@@ -26,16 +26,16 @@ public class TableBinder {
     private CourseService courseService = new CourseService();
     private StudentCourseService studentCourseService = new StudentCourseService();
 
-    public void bindTable() throws SQLException {
+    public void bindTable() {
         assignStudentToGroup();
         assignStudentToCourses();
         System.out.println("Binding succesfull!");
     }
 
-    private void assignStudentToGroup() throws SQLException {
+    private void assignStudentToGroup() {
         List<Group> groupListWithoutSize = groupSevice.getAll();
         List<Group> groupListWithSize = generateSizeToGroups(groupListWithoutSize);
-        List<Student> studentList = new LinkedList<>(studentService.getAll());
+        LinkedList<Student> studentList = new LinkedList<>(studentService.getAll());
         Collections.shuffle(studentList);
         for (Group group : groupListWithSize) {
             if (group.getSize() == 0) {
@@ -43,7 +43,7 @@ public class TableBinder {
             }
             int groupId = group.getGroupId();
             for (int i = 0; i < group.getSize(); i++) {
-                Student student = ((LinkedList<Student>) studentList).pollFirst();
+                Student student = studentList.pollFirst();
                 student.setGroupId(groupId);
                 studentService.update(student);
             }
@@ -51,7 +51,7 @@ public class TableBinder {
 
     }
 
-    private List<Group> generateSizeToGroups(List<Group> inputGroupList) throws SQLException {
+    private List<Group> generateSizeToGroups(List<Group> inputGroupList) {
         int totalSize = 0;
         Random random = new Random();
         for (Group group : inputGroupList) {
@@ -66,7 +66,7 @@ public class TableBinder {
         return inputGroupList;
     }
 
-    private void assignStudentToCourses() throws SQLException {
+    private void assignStudentToCourses() {
         List<Student> studentList = studentService.getAll();
         List<Course> courseList = courseService.getAll();
 
@@ -82,7 +82,7 @@ public class TableBinder {
         }
     }
 
-    private void addStudentCoursesToTable(Student student) throws SQLException {
+    private void addStudentCoursesToTable(Student student) {
         for (Course course : student.getCourses()) {
             StudentCourse studentCourse = new StudentCourse();
             studentCourse.setStudentId(student.getStudentId());

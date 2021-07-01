@@ -99,6 +99,7 @@ public class GroupSevice implements GroupDAO {
         return group;
     }
 
+    @Override
     public List<Group> getGroupsWithLessStudentCount(int inputStudentCount) {
         List<Group> groupList = new ArrayList<>();
         String sql = "SELECT id, group_name, size FROM groups WHERE size<=?";
@@ -116,7 +117,7 @@ public class GroupSevice implements GroupDAO {
         return groupList;
     }
 
-    private static Group constructGroupFromTable(ResultSet resultSet) {
+    private Group constructGroupFromTable(ResultSet resultSet) {
         Group group = new Group();
         try {
             group.setGroupId(resultSet.getInt("id"));

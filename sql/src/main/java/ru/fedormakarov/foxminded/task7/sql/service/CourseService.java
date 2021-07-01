@@ -110,7 +110,7 @@ public class CourseService implements CourseDAO {
         return courseList;
     }
 
-    private static Course constructCourseFromTable(ResultSet resultSet) throws SQLException {
+    private Course constructCourseFromTable(ResultSet resultSet) throws SQLException {
         Course course = new Course();
         course.setCourseId(resultSet.getInt("id"));
         course.setCourseName(resultSet.getString("course_name"));

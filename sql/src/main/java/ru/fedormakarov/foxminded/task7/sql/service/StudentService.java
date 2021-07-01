@@ -102,6 +102,7 @@ public class StudentService implements StudentDAO {
         return studentList;
     }
 
+    @Override
     public List<Student> getAllStudentsFromCourse(String courseName) {
         List<Student> studentList = new ArrayList<>();
         String sql = "SELECT st.id, first_name, last_name, group_id FROM students st "
@@ -121,7 +122,7 @@ public class StudentService implements StudentDAO {
         }
     }
 
-    private static Student constructStudentFromTable(ResultSet resultSet) {
+    private Student constructStudentFromTable(ResultSet resultSet) {
         Student student = new Student();
         try {
             student.setStudentId(resultSet.getInt("id"));
