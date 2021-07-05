@@ -47,7 +47,7 @@ public class DatabaseConnector {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                throw new RuntimeException("Connection failed");
+                throw new RuntimeException("Connection failed", e);
             }
 
         return instance;

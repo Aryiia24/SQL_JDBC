@@ -33,8 +33,8 @@ public class TableCreator {
     private static final int MIN_VALUE = 11;
     private static final int COUNT_OF_LETTERS = 26;
 
-    public void createAndFillTables(String SQLScriptFileName) {
-        createEmptyTables(SQLScriptFileName);
+    public void createAndFillTables(String sqlScriptFileName) {
+        createEmptyTables(sqlScriptFileName);
         List<Student> students = generateListRandomStudents();
         List<Group> groups = generateListRandomGroups();
         List<Course> courses = generateListCourses();
